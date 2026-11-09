@@ -1,335 +1,505 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sanremo Gelato Master AI</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#f1f5f9;--surface:#fff;--border:#e2e8f0;--text:#0f172a;--muted:#64748b;--primary:#10b981;--primary-hover:#059669;--primary-light:#d1fae5;--danger:#ef4444}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.5;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;height:64px;display:flex;flex-direction:column;justify-content:center;flex-shrink:0;z-index:100}
-.app-header h1{font-size:1.25rem;font-weight:700;letter-spacing:-0.5px}
-.app-header p{font-size:0.75rem;color:var(--muted)}
-.layout{display:flex;flex:1;overflow:hidden}
-.sidebar{width:260px;background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:0.25rem;overflow-y:auto}
-.nav-btn{width:100%;text-align:left;background:transparent;border:none;color:var(--muted);padding:0.75rem 1rem;border-radius:8px;font-weight:500;cursor:pointer;transition:all 0.2s;font-size:0.875rem;display:flex;align-items:center;gap:0.75rem}
-.nav-btn:hover{background:var(--bg);color:var(--text)}
-.nav-btn.active{background:var(--primary-light);color:var(--primary-hover);font-weight:600}
-.main{flex:1;padding:2rem;overflow-y:auto;background:var(--bg)}
-.screen{display:none;animation:fadeIn 0.3s ease}
-.screen.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1.5rem}
-.col-span-12{grid-column:span 12}.col-span-8{grid-column:span 8}.col-span-7{grid-column:span 7}.col-span-6{grid-column:span 6}.col-span-5{grid-column:span 5}.col-span-4{grid-column:span 4}
-h2{font-size:1.25rem;font-weight:600;margin-bottom:1.25rem}
-h3{font-size:1rem;font-weight:600;margin:1.5rem 0 0.75rem;border-bottom:1px solid var(--border);padding-bottom:0.5rem}
-label{display:block;font-size:0.75rem;font-weight:600;color:var(--muted);margin-bottom:0.4rem;margin-top:0.5rem}
-input,select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.75rem;border-radius:8px;font-size:0.875rem;font-family:inherit}
-input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-button{background:var(--primary);border:1px solid transparent;font-weight:600;padding:0.6rem 1.2rem;border-radius:8px;cursor:pointer;color:#fff;font-size:0.875rem;margin-right:0.5rem;margin-top:0.5rem;display:inline-flex;align-items:center;justify-content:center}
-button:hover{background:var(--primary-hover)}
-button.secondary{background:var(--surface);border-color:var(--border);color:var(--text)}
-button.secondary:hover{background:var(--bg)}
-button.danger{background:var(--danger)}
-.pill{display:inline-flex;align-items:center;padding:0.25rem 0.75rem;border-radius:9999px;font-size:0.75rem;font-weight:600;margin-right:0.5rem;margin-bottom:0.5rem}
-.pill.success{background:var(--primary-light);color:var(--primary-hover)}
-.pill.warning{background:#fef3c7;color:#b45309}
-.pill.error{background:#fee2e2;color:#b91c1c}
-.product-item,.recipe-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:0.75rem;border-left:4px solid var(--primary)}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
-hr{border:0;border-top:1px solid var(--border);margin:1.5rem 0}
-table{width:100%;border-collapse:collapse;margin-top:0.5rem}
-th{text-align:left;padding:0.5rem;font-size:0.75rem;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);background:var(--bg)}
-td{padding:0.5rem;font-size:0.875rem;border-bottom:1px solid var(--border)}
-.preview-box{background:#f8fafc;border-radius:8px;padding:1.5rem;font-family:monospace;white-space:pre-wrap;font-size:0.875rem;border:1px solid var(--border)}
-.tech-sheet{background:#fff;border-radius:8px;padding:2rem;font-size:0.875rem;border:1px solid var(--border);overflow-x:auto}
-.tech-sheet table{width:100%;border-collapse:collapse;margin:1rem 0}
-.tech-sheet th,.tech-sheet td{border:1px solid var(--border);padding:0.75rem;text-align:left}
-.ai-box{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid var(--primary);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
-.ai-box h2{color:var(--primary-hover);display:flex;align-items:center;gap:10px}
-.progress-bar{background:var(--border);border-radius:9999px;height:8px;overflow:hidden;margin:0.75rem 0}
-.progress-fill{background:var(--primary);height:100%;width:0%;transition:width 0.3s}
-::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Sanremo Gelato Master – Pro Formula</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a; --text-muted: #64748b;
+      --primary: #10b981; --primary-hover: #059669; --primary-light: #d1fae5; --danger: #ef4444;
+      --warning: #f59e0b; --info: #3b82f6; --sidebar-width: 260px;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    .app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1.5rem; height: 64px; display: flex; flex-direction: column; justify-content: center; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100; }
+    .app-header h1 { font-size: 1.25rem; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+    .app-header p { font-size: 0.75rem; color: var(--text-muted); }
+
+    .layout { display: flex; flex: 1; overflow: hidden; }
+    .sidebar { width: var(--sidebar-width); background: var(--surface); border-right: 1px solid var(--border); padding: 1.5rem 1rem; flex-shrink: 0; display: flex; flex-direction: column; gap: 0.25rem; overflow-y: auto; }
+    
+    .nav-btn { width: 100%; text-align: left; background: transparent; border: none; color: var(--text-muted); padding: 0.75rem 1rem; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; font-size: 0.875rem; display: flex; align-items: center; gap: 0.75rem; }
+    .nav-btn:hover { background: var(--bg); color: var(--text); }
+    .nav-btn.active { background: var(--primary-light); color: var(--primary-hover); font-weight: 600; }
+
+    .main { flex: 1; padding: 2rem; overflow-y: auto; background: var(--bg); }
+    .screen { display: none; animation: fadeIn 0.3s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
+    .col-span-12 { grid-column: span 12; } .col-span-8 { grid-column: span 8; } .col-span-7 { grid-column: span 7; }
+    .col-span-6 { grid-column: span 6; } .col-span-5 { grid-column: span 5; } .col-span-4 { grid-column: span 4; } .col-span-3 { grid-column: span 3; }
+
+    h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.25rem; color: var(--text); }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1.5rem 0 0.75rem 0; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;}
+    
+    label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; margin-top: 0.5rem;}
+    input, select { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.875rem; font-family: inherit; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+    button { background: var(--primary); border: 1px solid transparent; font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; color: #ffffff; font-size: 0.875rem; margin-right: 0.5rem; margin-top: 0.5rem; display: inline-flex; align-items: center; justify-content: center; }
+    button:hover { background: var(--primary-hover); }
+    button.secondary { background: var(--surface); border-color: var(--border); color: var(--text); }
+    button.secondary:hover { background: var(--bg); }
+    button.danger { background: var(--danger); }
+
+    .pill { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+    .pill.success { background: var(--primary-light); color: var(--primary-hover); }
+    .pill.warning { background: #fef3c7; color: #b45309; }
+
+    .product-item, .recipe-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; border-left: 4px solid var(--primary); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 0.5rem;}
+    th { text-align: left; padding: 0.5rem; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); background: var(--bg);}
+    td { padding: 0.5rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); }
+
+    .preview-box { background: #f8fafc; border-radius: 8px; padding: 1.5rem; font-family: 'Courier New', monospace; white-space: pre-wrap; font-size: 0.875rem; border: 1px solid var(--border); }
+    .ai-box { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 2px solid var(--primary); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;}
+    .ai-box h2 { color: var(--primary-hover); display: flex; align-items: center; gap: 10px;}
+  </style>
 </head>
 <body>
 <div class="app-header">
-<h1>🍦 Sanremo Gelato Master – Complete Edition</h1>
-<p>Auto-Rezeptur (KI) • LMIV • PAC/POD • Kalkulation • 40+ Rohstoffe</p>
+  <h1>🍦 Sanremo Gelato Master – Pro Formula</h1>
+  <p>Automatische Rezept-Generierung • Ausgewogene Cremigkeit • LMIV</p>
 </div>
 <div class="layout">
-<div class="sidebar">
-<button class="nav-btn active" data-screen="generator">✨ Auto-Rezeptur (KI)</button>
-<button class="nav-btn" data-screen="recipes">🍨 Manuelle Rezepte</button>
-<button class="nav-btn" data-screen="products">📦 Produkte & Rohstoffe</button>
-<button class="nav-btn" data-screen="costs">💰 Kosten & Verkauf</button>
-<button class="nav-btn" data-screen="techsheets">📄 Datenblätter & LMIV</button>
-<button class="nav-btn" data-screen="labelgen">🏷️ Etikett Generator</button>
-<button class="nav-btn" data-screen="backup">💾 Backup</button>
+  <div class="sidebar">
+    <button class="nav-btn active" data-screen="generator">✨ Auto-Rezeptur (KI)</button>
+    <button class="nav-btn" data-screen="products">📦 Produkte & Rohstoffe</button>
+    <button class="nav-btn" data-screen="recipes">🍨 Manuelle Rezepte</button>
+    <button class="nav-btn" data-screen="labelgen">🏷️ Etikett Generator</button>
+    <button class="nav-btn" data-screen="backup">💾 Backup</button>
+  </div>
+
+  <div class="main">
+    
+    <!-- AUTO GENERATOR -->
+    <section id="generator" class="screen active">
+      <div class="ai-box">
+        <h2>🤖 KI-Rezept-Generator (Profi-Algorithmus)</h2>
+        <p>Wähle eine Hauptzutat. Das System berechnet die perfekte Milch/Sahne-Basis, begrenzt den Milchpulveranteil auf maximal 5% (für echte Cremigkeit) und stellt den idealen PAC (Gefrierpunkt) für deine Maschine ein.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card col-span-4">
+          <h3>1. Parameter festlegen</h3>
+          <label>Hauptzutat wählen (z.B. Frucht)</label>
+          <select id="genMainProduct"></select>
+          
+          <label>Anteil der Hauptzutat (%)</label>
+          <input id="genMainPercent" type="number" value="30" step="1" min="5" max="60">
+
+          <label>Gefrierschrank Temperatur (°C)</label>
+          <select id="genTemp">
+            <option value="-12">-12 °C (Weich, Softeis)</option>
+            <option value="-16">-16 °C (Standard Gelato)</option>
+            <option value="-18" selected>-18 °C (Klassischer Gefrierschrank)</option>
+            <option value="-20">-20 °C (Harte Eismaschine)</option>
+          </select>
+
+          <label>Ziel-Gesamtmenge (kg)</label>
+          <input id="genTargetKg" type="number" value="5" step="0.5">
+
+          <button onclick="generateAutoRecipe()" style="margin-top: 1.5rem; width: 100%; padding: 1rem; font-size: 1rem;">✨ Perfekte Rezeptur generieren</button>
+        </div>
+
+        <div class="card col-span-8" id="genResultArea" style="display:none;">
+          <h3>2. Generierte Rezeptur</h3>
+          <div id="genAnalysisCards" class="three-col" style="margin-bottom: 1rem;"></div>
+          
+          <table id="genRecipeTable"></table>
+          
+          <div style="margin-top: 1.5rem;">
+            <button class="primary" onclick="saveGeneratedRecipe()">💾 Diese Rezeptur speichern</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUKTE -->
+    <section id="products" class="screen">
+      <div class="grid">
+        <div class="card col-span-5">
+          <h2>➕ Produkt bearbeiten</h2>
+          <input type="hidden" id="editProductId">
+          <label>Produktname</label><input id="prodName">
+          <label>Allergene</label><input id="prodAllergens">
+          <div class="three-col">
+            <div><label>Fett (%)</label><input id="prodFat" type="number" step="any"></div>
+            <div><label>Zucker (%)</label><input id="prodSugar" type="number" step="any"></div>
+            <div><label>Wasser (%)</label><input id="prodWater" type="number" step="any"></div>
+            <div><label>PAC (Gefrierpunkt)</label><input id="prodPac" type="number" step="any"></div>
+            <div><label>POD (Süße)</label><input id="prodPod" type="number" step="any"></div>
+            <div><label>Preis (€/kg)</label><input id="prodPrice" type="number" step="any"></div>
+          </div>
+          <button onclick="saveProduct()" style="margin-top:1rem;">💾 Speichern</button>
+        </div>
+        <div class="card col-span-7"><h2>📋 Bibliothek</h2><div id="productsList" style="max-height:600px; overflow-y:auto;"></div></div>
+      </div>
+    </section>
+
+    <!-- REZEPTE -->
+    <section id="recipes" class="screen">
+      <div class="grid">
+        <div class="card col-span-5">
+          <h2>🍨 Rezept manuell erstellen</h2>
+          <input type="hidden" id="editRecipeId">
+          <label>Rezeptname</label><input id="recipeName">
+          <label>Verkehrsbezeichnung</label><input id="recipeLegal">
+          <div class="two-col">
+            <div><label>Zielgewicht (kg)</label><input id="recipeTargetKg" type="number" step="0.1" value="6"></div>
+            <div><label>Verpackung</label><select id="recipePackaging"><option value="100">100 g</option><option value="5000">5000 g</option></select></div>
+          </div>
+          <h3>Zutaten</h3>
+          <div class="two-col">
+            <div><select id="recipeProductSelect"></select></div>
+            <div><input id="recipeItemQty" type="number" placeholder="Gramm"></div>
+          </div>
+          <button onclick="addRecipeItem()">+ Hinzufügen</button>
+          <button class="secondary" onclick="clearRecipeDraft()">Leeren</button>
+          <div id="recipeTotalWeight" style="margin-top:1rem; font-weight:600;"></div>
+          <button class="primary" onclick="scaleRecipeToTarget()" style="width:100%;">⚖️ Auf Zielgewicht skalieren</button>
+        </div>
+        <div class="card col-span-7">
+          <h2>📊 Aktuelle Rezeptur</h2>
+          <div style="max-height:250px; overflow:auto;"><table id="recipeItemsTable"></table></div>
+          <div id="recipeAnalysis"></div>
+          <button onclick="saveRecipe()" style="margin-top:1rem;">💾 Rezept speichern</button>
+          <h3 style="margin-top:2rem;">Gespeicherte Rezepte</h3>
+          <div id="savedRecipesList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ETIKETT -->
+    <section id="labelgen" class="screen">
+      <div class="grid">
+        <div class="card col-span-4">
+          <h2>🏷️ LMIV Etikett</h2>
+          <select id="labelRecipeSelect"></select>
+          <button onclick="generateLabel()">Generieren</button>
+        </div>
+        <div class="card col-span-8"><div class="preview-box" id="labelPreviewText"></div></div>
+      </div>
+    </section>
+
+    <!-- BACKUP -->
+    <section id="backup" class="screen">
+      <div class="grid">
+        <div class="card col-span-6"><button onclick="exportData()">📁 Export JSON</button><button class="secondary" onclick="document.getElementById('importFile').click()">📂 Import JSON</button><input id="importFile" type="file" style="display:none" onchange="importData(event)"></div>
+        <div class="card col-span-6"><button class="danger" onclick="resetAll()">⚠️ Reset</button></div>
+      </div>
+    </section>
+  </div>
 </div>
-<div class="main">
-<section id="generator" class="screen active">
-<div class="ai-box">
-<h2>🤖 KI-Rezept-Generator</h2>
-<p>Wähle eine Hauptzutat und die Temperatur deines Gefrierschranks. Das System berechnet automatisch die perfekte Basis (Milch, Sahne, Zucker, Dextrose), um den idealen PAC (Gefrierpunkt) und POD (Süße) für maximale Cremigkeit zu erreichen.</p>
-</div>
-<div class="grid">
-<div class="card col-span-4">
-<h3>1. Parameter</h3>
-<label>Hauptzutat (aus Bibliothek)</label><select id="genMainProduct"></select>
-<label>Anteil der Hauptzutat (%)</label><input id="genMainPercent" type="number" value="30" step="1" min="5" max="70">
-<label>Temperatur des Gefrierschranks (°C)</label>
-<select id="genTemp">
-<option value="-12">-12 °C (Weich, Softeis)</option>
-<option value="-16">-16 °C (Standard Gelato)</option>
-<option value="-18" selected>-18 °C (Klassischer Gefrierschrank)</option>
-<option value="-20">-20 °C (Harte Eismaschine)</option>
-<option value="-22">-22 °C (Tiefkühltruhe)</option>
-</select>
-<label>Ziel-Gesamtmenge (kg)</label><input id="genTargetKg" type="number" value="5" step="0.5">
-<button onclick="generateAutoRecipe()" style="margin-top:1.5rem;width:100%;padding:1rem;font-size:1rem;">✨ Rezeptur generieren</button>
-</div>
-<div class="card col-span-8" id="genResultArea" style="display:none;">
-<h3>2. Generierte Rezeptur (100% ausbalanciert)</h3>
-<div id="genAnalysisCards" class="three-col" style="margin-bottom:1rem;"></div>
-<table id="genRecipeTable"></table>
-<div style="margin-top:1.5rem;">
-<button class="primary" onclick="saveGeneratedRecipe()">💾 Rezeptur speichern</button>
-<button class="secondary" onclick="exportGeneratedToManual()">✏️ Manuell bearbeiten</button>
-</div>
-</div>
-</div>
-</section>
-<section id="products" class="screen">
-<div class="grid">
-<div class="card col-span-5">
-<h2>➕ Produkt bearbeiten</h2>
-<input type="hidden" id="editProductId">
-<label>Produktname</label><input id="prodName">
-<label>Kategorie</label><select id="prodCategory"><option>Milchprodukt</option><option>PASTE</option><option>Fettglasur</option><option>Frucht</option><option>Fett</option><option>Pulver</option><option>Zutat</option></select>
-<label>Allergene</label><input id="prodAllergens">
-<div class="three-col">
-<div><label>Fett (g)</label><input id="prodFat" type="number" step="any"></div>
-<div><label>Kohlenhydrate</label><input id="prodCarb" type="number" step="any"></div>
-<div><label>Zucker (g)</label><input id="prodSugar" type="number" step="any"></div>
-<div><label>Eiweiß (g)</label><input id="prodProtein" type="number" step="any"></div>
-<div><label>Salz (g)</label><input id="prodSalt" type="number" step="any"></div>
-<div><label>Wasser (%)</label><input id="prodWater" type="number" step="any"></div>
-<div><label>PAC</label><input id="prodPac" type="number" step="any"></div>
-<div><label>POD</label><input id="prodPod" type="number" step="any"></div>
-<div><label>Preis (€/kg)</label><input id="prodPrice" type="number" step="any"></div>
-</div>
-<hr><h3>🧪 Zusammensetzung (100%)</h3>
-<div class="two-col"><div><label>Zutat</label><input id="compName"></div><div><label>Anteil (%)</label><input id="compPercent" type="number" step="0.01"></div></div>
-<button onclick="addIngredientToCurrent()">➕ Hinzufügen</button>
-<button class="secondary" onclick="normalizeCurrentProduct()">↺ Auf 100%</button>
-<div class="progress-bar"><div class="progress-fill" id="productPercentFill"></div></div>
-<div id="currentCompositionList" style="font-size:0.9rem;margin-bottom:1rem;"></div>
-<button onclick="saveProduct()">💾 Speichern</button><button class="secondary" onclick="clearProductForm()">🔄 Leeren</button>
-</div>
-<div class="card col-span-7"><h2>📋 Bibliothek</h2><div id="productsList" style="max-height:700px;overflow-y:auto;"></div></div>
-</div>
-</section>
-<section id="recipes" class="screen">
-<div class="grid">
-<div class="card col-span-5">
-<h2>🍨 Rezept manuell</h2>
-<input type="hidden" id="editRecipeId">
-<label>Rezeptname</label><input id="recipeName">
-<label>Verkehrsbezeichnung</label><input id="recipeLegal">
-<div class="two-col">
-<div><label>Zielgewicht (kg)</label><input id="recipeTargetKg" type="number" step="0.1" value="6"></div>
-<div><label>Verpackung</label><select id="recipePackaging"><option value="100">100 g</option><option value="1000">1000 g</option><option value="5000">5000 g</option></select></div>
-</div>
-<h3>Zutaten</h3>
-<div class="two-col"><div><select id="recipeProductSelect"></select></div><div><input id="recipeItemQty" type="number" placeholder="Gramm"></div></div>
-<button onclick="addRecipeItem()">+ Hinzufügen</button><button class="secondary" onclick="clearRecipeDraft()">Leeren</button>
-<div id="recipeTotalWeight" style="margin-top:1rem;font-weight:600;"></div>
-<button class="primary" onclick="scaleRecipeToTarget()" style="width:100%;">⚖️ Auf Zielgewicht skalieren</button>
-</div>
-<div class="card col-span-7">
-<h2>📊 Analyse & Optimierung</h2>
-<div style="max-height:250px;overflow:auto;"><table id="recipeItemsTable"></table></div>
-<div id="recipeAnalysis"></div>
-<hr><h3>⚙️ Manuelle Optimierung</h3>
-<div class="three-col">
-<div><label>Ziel Zucker (%)</label><input id="goalSugar" type="number" value="20" step="any"></div>
-<div><label>Ziel Fett (%)</label><input id="goalFat" type="number" value="8" step="any"></div>
-<div><label>Ziel PAC</label><input id="goalPac" type="number" step="any"></div>
-</div>
-<button class="secondary" onclick="optimizeRecipe()">✨ Mengen automatisch anpassen</button>
-<hr><button onclick="saveRecipe()" style="width:100%;padding:1rem;">💾 Rezept speichern</button>
-</div>
-</div>
-</section>
-<section id="costs" class="screen">
-<div class="grid">
-<div class="card col-span-4">
-<h2>💰 Kosten & Verkauf</h2>
-<select id="costRecipeSelect" onchange="calculateCosts()"></select>
-<label>Arbeitskraft (€)</label><input id="costLabor" type="number" oninput="calculateCosts()">
-<label>Energie (€)</label><input id="costEnergy" type="number" oninput="calculateCosts()">
-<label>Verluste (%)</label><input id="costLoss" type="number" value="0" oninput="calculateCosts()">
-</div>
-<div class="card col-span-8"><h2>📈 Kalkulation</h2><div id="costResults"></div></div>
-</div>
-</section>
-<section id="techsheets" class="screen">
-<div class="grid">
-<div class="card col-span-4">
-<h2>📄 Datenblatt</h2>
-<select id="techRecipeSelect"></select>
-<button onclick="generateRecipeTechSheet()">📄 Generieren</button>
-<button class="secondary" onclick="window.print()">🖨️ Drucken / PDF</button>
-</div>
-<div class="card col-span-8"><div id="techSheetPreview" class="tech-sheet"><p>Bitte Rezept wählen.</p></div></div>
-</div>
-</section>
-<section id="labelgen" class="screen">
-<div class="grid">
-<div class="card col-span-4">
-<h2>🏷️ LMIV Etikett</h2>
-<select id="labelRecipeSelect"></select>
-<button onclick="generateLabel()">Generieren</button>
-</div>
-<div class="card col-span-8"><div class="preview-box" id="labelPreviewText"></div></div>
-</div>
-</section>
-<section id="backup" class="screen">
-<div class="grid">
-<div class="card col-span-6"><h2>Backup</h2><button onclick="exportData()">📁 Export JSON</button><button class="secondary" onclick="document.getElementById('importFile').click()">📂 Import JSON</button><input id="importFile" type="file" style="display:none" onchange="importData(event)"></div>
-<div class="card col-span-6"><h2>Reset</h2><button class="danger" onclick="resetAll()">⚠️ Alle Daten löschen</button></div>
-</div>
-</section>
-</div>
-</div>
+
 <script>
-const STORAGE_KEY='sanremo_final_v1';
-const DEFAULT_PRODUCTS=[
-{"id":"p_milch","name":"MILCH","category":"Milchprodukt","allergens":"MILCH","nutrition":{"fat":3.5,"carb":4.8,"sugar":4.8,"protein":3.3,"salt":0.1},"water":87.5,"pac":0,"pod":0,"price":1.2,"composition":[]},
-{"id":"p_sahne","name":"SAHNE","category":"Milchprodukt","allergens":"MILCH","nutrition":{"fat":33,"carb":3.4,"sugar":3.4,"protein":2.4,"salt":0.03},"water":60,"pac":0,"pod":0,"price":3.5,"composition":[]},
-{"id":"p_magermilch","name":"MAGERMILCHPULVER","category":"Pulver","allergens":"MILCH","nutrition":{"fat":0.8,"carb":52,"sugar":52,"protein":35,"salt":1.1},"water":5,"pac":0,"pod":0,"price":8,"composition":[]},
-{"id":"p_zucker","name":"Zucker","category":"Süße","allergens":"","nutrition":{"fat":0,"carb":100,"sugar":100,"protein":0,"salt":0},"water":0,"pac":100,"pod":100,"price":1,"composition":[]},
-{"id":"p_dextrose","name":"Dextrose","category":"Pulver","allergens":"","nutrition":{"fat":0,"carb":100,"sugar":100,"protein":0,"salt":0},"water":0,"pac":190,"pod":70,"price":2.5,"composition":[]},
-{"id":"p_glukose","name":"Glukosesirup","category":"Süße","allergens":"","nutrition":{"fat":0,"carb":100,"sugar":100,"protein":0,"salt":0},"water":20,"pac":100,"pod":40,"price":1.5,"composition":[]},
-{"id":"p_wasser","name":"Wasser","category":"Zutat","allergens":"","nutrition":{"fat":0,"carb":0,"sugar":0,"protein":0,"salt":0},"water":100,"pac":0,"pod":0,"price":0,"composition":[]},
-{"id":"p_joghurt","name":"Joghurt","category":"Milchprodukt","allergens":"MILCH","nutrition":{"fat":3.5,"carb":4.4,"sugar":4.4,"protein":3.9,"salt":0.12},"water":85,"pac":0,"pod":0,"price":1.8,"composition":[]},
-{"id":"p_kakaoglasur","name":"Kakaoglasur","category":"fettglasur","allergens":"SOJA","nutrition":{"fat":49.75,"carb":41.14,"sugar":40.96,"protein":2.1,"salt":0.1},"water":5,"pac":0,"pod":0,"price":6.5,"composition":[{"id":"kg1","name":"Kokosnussöl","percent":45},{"id":"kg2","name":"Kakaopulver","percent":25},{"id":"kg3","name":"Rapsöl","percent":15},{"id":"kg4","name":"Zucker","percent":10},{"id":"kg5","name":"SOJALECITHIN","percent":3},{"id":"kg6","name":"Aromen","percent":2}]},
-{"id":"p_milkcocoa","name":"MILK COCOA","category":"Milchprodukt","allergens":"MILCH, SOJA","nutrition":{"fat":25,"carb":55,"sugar":50,"protein":8,"salt":0.2},"water":10,"pac":0,"pod":0,"price":5,"composition":[]},
-{"id":"p_dunklecreme","name":"Dunkle Creme Kakao","category":"PASTE","allergens":"MILCH, SOJA","nutrition":{"fat":68,"carb":15,"sugar":12,"protein":5,"salt":0.1},"water":5,"pac":0,"pod":0,"price":7,"composition":[]},
-{"id":"p_caramel","name":"CARAMEL PASTA","category":"PASTE","allergens":"MILCH, EI, SOJA","nutrition":{"fat":0,"carb":60,"sugar":53,"protein":0,"salt":0},"water":30,"pac":0,"pod":0,"price":6,"composition":[]},
-{"id":"p_haselnuss","name":"Haselnusspaste","category":"PASTE","allergens":"HASELNÜSSE","nutrition":{"fat":66.1,"carb":6.6,"sugar":4,"protein":14.8,"salt":0.6},"water":2,"pac":0,"pod":0,"price":15,"composition":[]},
-{"id":"p_erdbeerglasur","name":"Erdbeer Glasur","category":"PASTE","allergens":"MILCH, SOJA","nutrition":{"fat":0.2,"carb":59,"sugar":43.1,"protein":0.2,"salt":0.25},"water":40,"pac":0,"pod":0,"price":4.5,"composition":[]},
-{"id":"p_cookies","name":"COOKIES PASTA","category":"PASTE","allergens":"MILCH, EI","nutrition":{"fat":7,"carb":54.2,"sugar":40.8,"protein":4.8,"salt":1.1},"water":25,"pac":0,"pod":0,"price":8,"composition":[]},
-{"id":"p_weissescho","name":"Weiße Schokolade PASTE","category":"PASTE","allergens":"MILCH, SOJA","nutrition":{"fat":40,"carb":50,"sugar":49,"protein":6.3,"salt":0},"water":2,"pac":0,"pod":0,"price":9,"composition":[]},
-{"id":"p_kakaopulver","name":"Kakaopulver","category":"Pulver","allergens":"","nutrition":{"fat":23,"carb":10,"sugar":1,"protein":20,"salt":0.1},"water":5,"pac":0,"pod":0,"price":7.5,"composition":[]},
-{"id":"p_vanille","name":"Vanille PASTE","category":"PASTE","allergens":"","nutrition":{"fat":0.4,"carb":61,"sugar":49,"protein":0,"salt":0.63},"water":30,"pac":0,"pod":0,"price":12,"composition":[]},
-{"id":"p_pistazien","name":"Pistazien Creme","category":"PASTE","allergens":"MILCH, PISTAZIEN, SOJA","nutrition":{"fat":41.7,"carb":38.3,"sugar":37,"protein":12.5,"salt":0.5},"water":5,"pac":0,"pod":0,"price":18,"composition":[]},
-{"id":"p_amarena","name":"Amarena Pasta","category":"Frucht","allergens":"MILCH, EI, SOJA","nutrition":{"fat":0,"carb":60.5,"sugar":60.5,"protein":0.3,"salt":0.5},"water":30,"pac":0,"pod":0,"price":5.5,"composition":[]},
-{"id":"p_erdbeeren","name":"Erdbeeren tiefgefroren","category":"Frucht","allergens":"","nutrition":{"fat":0.4,"carb":7.7,"sugar":4.9,"protein":0.6,"salt":0},"water":90,"pac":0,"pod":0,"price":3,"composition":[]},
-{"id":"p_himbeeren","name":"Himbeeren tiefgefroren","category":"Frucht","allergens":"","nutrition":{"fat":0.5,"carb":5.4,"sugar":5.4,"protein":1.5,"salt":0},"water":85,"pac":0,"pod":0,"price":5,"composition":[]},
-{"id":"p_banana","name":"Banana","category":"Frucht","allergens":"","nutrition":{"fat":0.3,"carb":20,"sugar":12,"protein":1.1,"salt":0},"water":75,"pac":0,"pod":0,"price":1.5,"composition":[]},
-{"id":"p_waldbeeren","name":"Waldbeeren","category":"Frucht","allergens":"","nutrition":{"fat":0.7,"carb":9.1,"sugar":6.6,"protein":1.3,"salt":0},"water":85,"pac":0,"pod":0,"price":4.5,"composition":[]},
-{"id":"p_heidelbeeren","name":"Heidelbeeren","category":"Frucht","allergens":"","nutrition":{"fat":0.3,"carb":14.5,"sugar":10,"protein":0.7,"salt":0},"water":84,"pac":0,"pod":0,"price":4,"composition":[]},
-{"id":"p_pfirsich","name":"Pfirsich","category":"Frucht","allergens":"","nutrition":{"fat":0.3,"carb":9.5,"sugar":8.5,"protein":0.9,"salt":0},"water":88,"pac":0,"pod":0,"price":2.5,"composition":[]},
-{"id":"p_sauerkirschen","name":"Sauerkirschen","category":"Frucht","allergens":"","nutrition":{"fat":0.3,"carb":12.2,"sugar":8.5,"protein":1,"salt":0},"water":85,"pac":0,"pod":0,"price":3.5,"composition":[]},
-{"id":"p_mango","name":"Mango","category":"Frucht","allergens":"","nutrition":{"fat":0.4,"carb":15,"sugar":14,"protein":0.8,"salt":0},"water":83,"pac":0,"pod":0,"price":4,"composition":[]},
-{"id":"p_ananas","name":"Ananas","category":"Frucht","allergens":"","nutrition":{"fat":0.1,"carb":13,"sugar":10,"protein":0.5,"salt":0},"water":86,"pac":0,"pod":0,"price":2,"composition":[]},
-{"id":"p_zitrone","name":"Zitrone (Saft)","category":"Frucht","allergens":"","nutrition":{"fat":0.3,"carb":9,"sugar":2.5,"protein":1.1,"salt":0},"water":89,"pac":0,"pod":0,"price":3,"composition":[]},
-{"id":"p_laktosefrei","name":"Laktosefreie Milch","category":"Milchprodukt","allergens":"MILCH","nutrition":{"fat":1.5,"carb":4.9,"sugar":4.9,"protein":3.4,"salt":0.13},"water":89,"pac":0,"pod":0,"price":1.6,"composition":[]},
-{"id":"p_supergelmix","name":"SUPER GEL MIX","category":"Pulver","allergens":"SOJA","nutrition":{"fat":10,"carb":81,"sugar":50,"protein":0.7,"salt":0.56},"water":3,"pac":0,"pod":0,"price":6,"composition":[]},
-{"id":"p_lemongiu","name":"LEMON PIÙ","category":"Pulver","allergens":"","nutrition":{"fat":3.5,"carb":69,"sugar":29,"protein":1.2,"salt":0.3},"water":3,"pac":0,"pod":0,"price":8.5,"composition":[]},
-{"id":"p_grundbasis","name":"Milchspeiseeis Basis","category":"Milchprodukt","allergens":"MILCH","nutrition":{"fat":4.9,"carb":50.8,"sugar":48.3,"protein":4.8,"salt":0.09},"water":55,"pac":0,"pod":0,"price":5,"composition":[]},
-{"id":"p_pfefferminz","name":"Pfefferminz-Extrakt","category":"PASTE","allergens":"","nutrition":{"fat":0.2,"carb":76.3,"sugar":49,"protein":0.2,"salt":0.02},"water":20,"pac":0,"pod":0,"price":10,"composition":[]},
-{"id":"p_amarenasosse","name":"Amarena SOßE","category":"Zutat","allergens":"SULFITE","nutrition":{"fat":0,"carb":96.9,"sugar":67.8,"protein":0.3,"salt":0},"water":30,"pac":0,"pod":0,"price":6,"composition":[]},
-{"id":"p_weissschoko","name":"Weiß Schokolade Raspel","category":"Zutat","allergens":"MILCH","nutrition":{"fat":30.5,"carb":18.4,"sugar":62.2,"protein":4.5,"salt":0.16},"water":2,"pac":0,"pod":0,"price":12,"composition":[]},
-{"id":"p_dunkelschoko","name":"Dunkel Schokolade Raspel","category":"Zutat","allergens":"","nutrition":{"fat":25.5,"carb":53,"sugar":48.3,"protein":7.3,"salt":0.01},"water":2,"pac":0,"pod":0,"price":10,"composition":[]},
-{"id":"p_keksstuckchen","name":"Keksstückchen","category":"Milchprodukt","allergens":"WEIZEN, SOJA","nutrition":{"fat":26,"carb":57,"sugar":32,"protein":6.3,"salt":0.75},"water":5,"pac":0,"pod":0,"price":8,"composition":[]},
-{"id":"p_base_soave","name":"SOAVE","category":"Milchprodukt","allergens":"MILCH","nutrition":{"fat":12,"carb":57,"sugar":40,"protein":11,"salt":1.1},"water":5,"pac":0,"pod":0,"price":6.5,"composition":[]},
-{"id":"p_karamellsauce","name":"Karamellsauce","category":"Zutat","allergens":"SULFITE","nutrition":{"fat":0,"carb":66.6,"sugar":64.5,"protein":0.1,"salt":0.03},"water":30,"pac":0,"pod":0,"price":5,"composition":[]},
-{"id":"p_orangen","name":"Orangenzubereitung","category":"PASTE","allergens":"","nutrition":{"fat":0,"carb":67.5,"sugar":60.6,"protein":0.1,"salt":0.21},"water":30,"pac":0,"pod":0,"price":7.5,"composition":[]},
-{"id":"p_snickers","name":"Snickers Paste","category":"PASTE","allergens":"ERDNÜSSE","nutrition":{"fat":49,"carb":12,"sugar":4,"protein":26,"salt":0.1},"water":2,"pac":0,"pod":0,"price":15,"composition":[]},
-{"id":"p_erdnuss","name":"ERDNÜSSE Bonem","category":"Zutat","allergens":"ERDNÜSSE","nutrition":{"fat":51.4,"carb":11,"sugar":5.3,"protein":24,"salt":0.8},"water":2,"pac":0,"pod":0,"price":10,"composition":[]},
-{"id":"p_kadayif","name":"Kadayif","category":"Zutat","allergens":"","nutrition":{"fat":1.7,"carb":74,"sugar":1.5,"protein":7,"salt":0.5},"water":10,"pac":0,"pod":0,"price":6,"composition":[]},
-{"id":"p_hanutta","name":"Hanutta","category":"Zutat","allergens":"GLUTEN, SOJA, MILCH, HASELNÜSSE","nutrition":{"fat":31.9,"carb":54,"sugar":42.6,"protein":7.6,"salt":0.43},"water":5,"pac":0,"pod":0,"price":12,"composition":[]},
-{"id":"p_base_serena","name":"BASE SERENA","category":"Milchprodukt","allergens":"MILCH","nutrition":{"fat":35.4,"carb":43.3,"sugar":24.9,"protein":10.9,"salt":1.53},"water":5,"pac":0,"pod":0,"price":7.5,"composition":[]},
-{"id":"p_mango_puree","name":"Alphonso Mango Puree","category":"Frucht","allergens":"","nutrition":{"fat":0.3,"carb":17,"sugar":14,"protein":0.6,"salt":0.1},"water":80,"pac":0,"pod":0,"price":6,"composition":[]},
-{"id":"p_paw_patrol","name":"Base Gelato Paw Patrol","category":"Milchprodukt","allergens":"MILCH","nutrition":{"fat":8.1,"carb":79,"sugar":67,"protein":3.1,"salt":0.36},"water":10,"pac":0,"pod":0,"price":8,"composition":[]},
-{"id":"p_bolo_creme","name":"Bolo de Creme (Kuchen)","category":"Zutat","allergens":"MILCH, GLUTEN, EI","nutrition":{"fat":15,"carb":45,"sugar":30,"protein":5,"salt":0.5},"water":35,"pac":30,"pod":30,"price":10,"composition":[]}
-];
-let state={products:[],recipes:[],recipeDraft:[]};
-function loadState(){const s=localStorage.getItem(STORAGE_KEY);if(s){try{state={...state,...JSON.parse(s)}}catch(e){}}if(!state.products||state.products.length===0)state.products=JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));if(!state.recipes)state.recipes=[];if(!state.recipeDraft)state.recipeDraft=[]}
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));renderAll()}
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).substr(2,5);
-const parseNum=v=>{if(!v)return 0;let n=parseFloat(String(v).replace(',','.'));return isNaN(n)?0:n};
-function analyzeRecipe(items){const total=items.reduce((s,i)=>s+i.qty,0);if(total===0)return null;let acc={fat:0,sugar:0,carb:0,protein:0,salt:0,pac:0,pod:0,cost:0,water:0};let completeData=true;items.forEach(it=>{const p=state.products.find(x=>x.id===it.productId);if(!p)return;const f=it.qty/total;acc.fat+=(p.nutrition?.fat||0)*f;acc.sugar+=(p.nutrition?.sugar||0)*f;acc.carb+=(p.nutrition?.carb||0)*f;acc.protein+=(p.nutrition?.protein||0)*f;acc.salt+=(p.nutrition?.salt||0)*f;if(p.water!==undefined&&p.water!==null)acc.water+=p.water*f;else completeData=false;acc.pac+=(p.pac||0)*f;acc.pod+=(p.pod||0)*f;acc.cost+=(it.qty/1000)*(p.price||0)});return{total,...acc,solids:completeData?100-acc.water:null}}
-function getTargetPac(t){return Math.abs(t)*13.5}
-function generateAutoRecipe(){
-const mainId=document.getElementById('genMainProduct').value;const mainPct=parseNum(document.getElementById('genMainPercent').value)/100;const temp=parseNum(document.getElementById('genTemp').value);const totalKg=parseNum(document.getElementById('genTargetKg').value);
-if(!mainId)return alert("Hauptzutat wählen");if(mainPct<=0||mainPct>=0.8)return alert("Anteil zwischen 1% und 80%");
-const mainP=state.products.find(p=>p.id===mainId);if(!mainP)return;
-const totalG=totalKg*1000;const mainG=totalG*mainP;
-const targetPac=getTargetPac(temp);const targetFat=8;const targetSugar=18;
-const cFat=(mainP.nutrition?.fat||0)*mainPct;const cSugar=(mainP.nutrition?.sugar||0)*mainPct;const cPac=(mainP.pac||0)*mainPct;
-let needFat=Math.max(0,targetFat-cFat);let needSugar=Math.max(0,targetSugar-cSugar);
-let gSahne=(needFat/100)*totalG/0.33;let gMilch=totalG*0.5;
-let tSugarG=(needSugar/100)*totalG;let gDextrose=tSugarG*0.6;let gZucker=tSugarG*0.4;
-let gMagermilch=totalG*0.04;
-let currentSum=mainG+gSahne+gMilch+gDextrose+gZucker+gMagermilch;
-let gWasser=Math.max(0,totalG-currentSum);
-if(currentSum>totalG){gMilch-=(currentSum-totalG);if(gMilch<0)gMilch=0;gWasser=0}
-let draft=[];draft.push({id:uid(),productId:mainP.id,qty:mainG});
-if(gSahne>0)draft.push({id:uid(),productId:'p_sahne',qty:gSahne});if(gMagermilch>0)draft.push({id:uid(),productId:'p_magermilch',qty:gMagermilch});if(gZucker>0)draft.push({id:uid(),productId:'p_zucker',qty:gZucker});if(gDextrose>0)draft.push({id:uid(),productId:'p_dextrose',qty:gDextrose});if(gMilch>0)draft.push({id:uid(),productId:'p_milch',qty:gMilch});if(gWasser>0)draft.push({id:uid(),productId:'p_wasser',qty:gWasser});
-window.currentGenDraft=draft;window.currentGenTotal=totalG;
-renderGenRecipe(draft,totalG,temp)
-}
-function renderGenRecipe(draft,totalG,temp){
-document.getElementById('genResultArea').style.display='block';const a=analyzeRecipe(draft);
-document.getElementById('genAnalysisCards').innerHTML=`
-<div class="card" style="margin:0;padding:1rem;"><small>Ziel PAC (${temp}°C)</small><br><strong style="font-size:1.2rem;color:var(--primary)">${getTargetPac(temp).toFixed(0)}</strong></div>
-<div class="card" style="margin:0;padding:1rem;"><small>Ist PAC</small><br><strong style="font-size:1.2rem;">${a.pac.toFixed(1)}</strong></div>
-<div class="card" style="margin:0;padding:1rem;"><small>Fettgehalt</small><br><strong style="font-size:1.2rem;">${a.fat.toFixed(1)}%</strong></div>
-<div class="card" style="margin:0;padding:1rem;"><small>Zuckergehalt</small><br><strong style="font-size:1.2rem;">${a.sugar.toFixed(1)}%</strong></div>
-<div class="card" style="margin:0;padding:1rem;"><small>Sólidos</small><br><strong style="font-size:1.2rem;">${a.solids?a.solids.toFixed(1)+'%':'-'}</strong></div>
-<div class="card" style="margin:0;padding:1rem;"><small>Kosten</small><br><strong style="font-size:1.2rem;">${a.cost.toFixed(2)} €</strong></div>`;
-document.getElementById('genRecipeTable').innerHTML=`<thead><tr><th>Zutat</th><th>Menge</th><th>Anteil</th></tr></thead><tbody>`+draft.map(it=>{const p=state.products.find(x=>x.id===it.productId);return`<tr><td>${p?.name}</td><td>${it.qty.toFixed(1)} g</td><td>${(it.qty/totalG*100).toFixed(1)}%</td></tr>`}).join('')+`</tbody>`
-}
-window.saveGeneratedRecipe=()=>{if(!window.currentGenDraft)return;const n=prompt("Rezeptname:","Auto-Kreation "+new Date().toLocaleDateString());if(!n)return;state.recipes.push({id:uid(),name:n,legalName:"Speiseeis",packaging:"5000",targetKg:window.currentGenTotal/1000,items:window.currentGenDraft});saveState();alert("Gespeichert!")};
-window.exportGeneratedToManual=()=>{if(!window.currentGenDraft)return;state.recipeDraft=JSON.parse(JSON.stringify(window.currentGenDraft));saveState();switchScreen('recipes')};
-function renderAll(){
-document.getElementById('genMainProduct').innerHTML=state.products.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-document.getElementById('recipeProductSelect').innerHTML=state.products.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-const rOpts='<option value="">Wählen</option>'+state.recipes.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
-document.getElementById('labelRecipeSelect').innerHTML=rOpts;document.getElementById('costRecipeSelect').innerHTML=rOpts;document.getElementById('techRecipeSelect').innerHTML=rOpts;
-document.getElementById('productsList').innerHTML=state.products.map(p=>`<div class="product-item"><strong>${p.name}</strong><br><small>Fett:${p.nutrition?.fat||0}g | Zucker:${p.nutrition?.sugar||0}g | PAC:${p.pac} | Preis:${p.price}€/kg</small><br><button onclick="editProduct('${p.id}')" style="padding:0.3rem 0.6rem;font-size:0.7rem;">✏️ Bearbeiten</button></div>`).join('');
-document.getElementById('recipeItemsTable').innerHTML=`<tbody>${state.recipeDraft.map(it=>{const p=state.products.find(x=>x.id===it.productId);return`<tr><td>${p?.name}</td><td>${it.qty.toFixed(1)} g</td><td><button class="danger" style="padding:0.1rem 0.4rem" onclick="removeRecipeDraftItem('${it.id}')">X</button></td></tr>`}).join('')}</tbody>`;
-const total=state.recipeDraft.reduce((s,i)=>s+i.qty,0);document.getElementById('recipeTotalWeight').innerText=`Gesamt: ${total.toFixed(1)} g`;
-const a=analyzeRecipe(state.recipeDraft);document.getElementById('recipeAnalysis').innerHTML=a?`<div class="three-col" style="margin-top:1rem;"><div class="card">Zucker:<b>${a.sugar.toFixed(1)}%</b></div><div class="card">Fett:<b>${a.fat.toFixed(1)}%</b></div><div class="card">PAC:<b>${a.pac.toFixed(1)}</b></div></div>`:'';
-}
-window.editProduct=id=>{const p=state.products.find(x=>x.id===id);if(!p)return;document.getElementById('editProductId').value=p.id;document.getElementById('prodName').value=p.name;document.getElementById('prodAllergens').value=p.allergens||'';document.getElementById('prodFat').value=p.nutrition?.fat||0;document.getElementById('prodCarb').value=p.nutrition?.carb||0;document.getElementById('prodSugar').value=p.nutrition?.sugar||0;document.getElementById('prodProtein').value=p.nutrition?.protein||0;document.getElementById('prodSalt').value=p.nutrition?.salt||0;document.getElementById('prodWater').value=p.water||0;document.getElementById('prodPac').value=p.pac||0;document.getElementById('prodPod').value=p.pod||0;document.getElementById('prodPrice').value=p.price||0;renderCurrentComposition(p)};
-function renderCurrentComposition(p){const d=document.getElementById('currentCompositionList');if(!p||!p.composition){d.innerHTML='';document.getElementById('productPercentFill').style.width='0%';return}const s=p.composition.reduce((a,b)=>a+b.percent,0);document.getElementById('productPercentFill').style.width=Math.min(100,s)+'%';d.innerHTML=p.composition.map(c=>`<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border)"><span>${c.name}</span><span>${c.percent}% <button class="danger" style="padding:0 5px;height:20px" onclick="removeComp('${c.id}')">X</button></span></div>`).join('')}
-window.removeComp=id=>{const pid=document.getElementById('editProductId').value;const p=state.products.find(x=>x.id===pid);if(p){p.composition=p.composition.filter(c=>c.id!==id);renderCurrentComposition(p);saveState()}};
-window.addIngredientToCurrent=()=>{const pid=document.getElementById('editProductId').value;const p=state.products.find(x=>x.id===pid);if(!p)return alert("Speichern Sie zuerst das Produkt");const n=document.getElementById('compName').value;const pc=parseNum(document.getElementById('compPercent').value);if(!n||pc<=0)return;p.composition=p.composition||[];p.composition.push({id:uid(),name:n,percent:pc});document.getElementById('compName').value='';document.getElementById('compPercent').value='';renderCurrentComposition(p);saveState()};
-window.normalizeCurrentProduct=()=>{const pid=document.getElementById('editProductId').value;const p=state.products.find(x=>x.id===pid);if(!p||!p.composition.length)return;const s=p.composition.reduce((a,b)=>a+b.percent,0);if(s===0)return;p.composition=p.composition.map(c=>({...c,percent:parseFloat((c.percent/s*100).toFixed(2))}));renderCurrentComposition(p);saveState()};
-window.saveProduct=()=>{const id=document.getElementById('editProductId').value;let p=state.products.find(x=>x.id===id);if(!p)return alert("Produkt nicht gefunden");p.name=document.getElementById('prodName').value;p.allergens=document.getElementById('prodAllergens').value;p.nutrition={fat:parseNum(document.getElementById('prodFat').value),carb:parseNum(document.getElementById('prodCarb').value),sugar:parseNum(document.getElementById('prodSugar').value),protein:parseNum(document.getElementById('prodProtein').value),salt:parseNum(document.getElementById('prodSalt').value)};p.water=parseNum(document.getElementById('prodWater').value);p.pac=parseNum(document.getElementById('prodPac').value);p.pod=parseNum(document.getElementById('prodPod').value);p.price=parseNum(document.getElementById('prodPrice').value);saveState();alert("Aktualisiert")};
-function clearProductForm(){['editProductId','prodName','prodAllergens','prodFat','prodCarb','prodSugar','prodProtein','prodSalt','prodWater','prodPac','prodPod','prodPrice'].forEach(i=>document.getElementById(i).value='');document.getElementById('currentCompositionList').innerHTML='';document.getElementById('productPercentFill').style.width='0%'}
-window.addRecipeItem=()=>{const pid=document.getElementById('recipeProductSelect').value;const qty=parseNum(document.getElementById('recipeItemQty').value);if(pid&&qty>0){state.recipeDraft.push({id:uid(),productId:pid,qty});saveState()}};
-window.removeRecipeDraftItem=id=>{state.recipeDraft=state.recipeDraft.filter(i=>i.id!==id);saveState()};
-window.clearRecipeDraft=()=>{state.recipeDraft=[];saveState()};
-window.scaleRecipeToTarget=()=>{const target=parseNum(document.getElementById('recipeTargetKg').value)*1000;const current=state.recipeDraft.reduce((s,i)=>s+i.qty,0);if(current===0)return;state.recipeDraft.forEach(it=>it.qty=Math.round((it.qty/current)*target));saveState()};
-window.saveRecipe=()=>{const n=document.getElementById('recipeName').value;if(!n)return alert("Name fehlt");state.recipes.push({id:uid(),name:n,legalName:document.getElementById('recipeLegal').value||n,packaging:document.getElementById('recipePackaging').value,targetKg:parseNum(document.getElementById('recipeTargetKg').value),items:[...state.recipeDraft]});state.recipeDraft=[];saveState();alert("Rezept gespeichert")};
-window.optimizeRecipe=()=>{if(state.recipeDraft.length<2)return alert("Mindestens 2 Zutaten");const gS=parseNum(document.getElementById('goalSugar').value);const gF=parseNum(document.getElementById('goalFat').value);const gP=parseNum(document.getElementById('goalPac').value);let best=JSON.parse(JSON.stringify(state.recipeDraft));let score=Infinity;for(let step of[50,10,5,1]){let imp=true,passes=0;while(imp&&passes++<100){imp=false;for(let i=0;i<best.length;i++){for(let j=0;j<best.length;j++){if(i===j||best[j].qty<step)continue;best[i].qty+=step;best[j].qty-=step;const a=analyzeRecipe(best);let s=0;if(gS)s+=Math.pow((a.sugar-gS)/Math.max(2,gS),2);if(gF)s+=Math.pow((a.fat-gF)/Math.max(2,gF),2);if(gP)s+=Math.pow((a.pac-gP)/Math.max(2,gP),2);if(s<score){score=s;imp=true}else{best[i].qty-=step;best[j].qty+=step}}}}}best.forEach(it=>{if(it.qty<0)it.qty=0});state.recipeDraft=best;saveState();alert("Optimiert!")};
-window.calculateCosts=()=>{const r=state.recipes.find(x=>x.id===document.getElementById('costRecipeSelect').value);const out=document.getElementById('costResults');if(!r){out.innerHTML='<p>Rezept wählen</p>';return}const a=analyzeRecipe(r.items);if(!a)return;const labor=parseNum(document.getElementById('costLabor').value);const energy=parseNum(document.getElementById('costEnergy').value);const loss=parseNum(document.getElementById('costLoss').value);const total=a.cost+labor+energy;const usable=a.total*(1-(loss/100));const perKg=usable>0?total/(usable/1000):0;out.innerHTML=`<div class="two-col"><div class="card"><small>Zutaten</small><br><b>${a.cost.toFixed(2)} €</b></div><div class="card"><small>Gesamt</small><br><b>${total.toFixed(2)} €</b></div><div class="card" style="background:var(--primary-light)"><small>Kosten/kg</small><br><b style="font-size:1.5rem">${perKg.toFixed(2)} €</b></div><div class="card"><small>Ausbeute</small><br><b>${(usable/1000).toFixed(2)} kg</b></div></div>`};
-window.generateLabel=()=>{const r=state.recipes.find(x=>x.id===document.getElementById('labelRecipeSelect').value);const pre=document.getElementById('labelPreviewText');if(!r){pre.innerText='Rezept wählen';return}const a=analyzeRecipe(r.items);const ing=r.items.map(i=>state.products.find(p=>p.id===i.productId)?.name).join(', ');pre.innerText=`${r.legalName}\n\nZutaten: ${ing}.\n\nNährwerte pro 100g:\nFett: ${a.fat.toFixed(1)}g\nZucker: ${a.sugar.toFixed(1)}g\n\nInhalt: ${r.packaging}g`};
-window.generateRecipeTechSheet=()=>{const r=state.recipes.find(x=>x.id===document.getElementById('techRecipeSelect').value);const pre=document.getElementById('techSheetPreview');if(!r){pre.innerHTML='<p>Rezept wählen</p>';return}const a=analyzeRecipe(r.items);const tbl=r.items.map(it=>{const p=state.products.find(x=>x.id===it.productId);return`<tr><td>${p?.name}</td><td>${it.qty.toFixed(1)}g</td></tr>`}).join('');pre.innerHTML=`<h2>${r.name}</h2><h3>Rezeptur</h3><table><tr><th>Zutat</th><th>Menge</th></tr>${tbl}</table><h3>Werte</h3><table><tr><th>Zucker</th><td>${a.sugar.toFixed(1)}%</td></tr><tr><th>Fett</th><td>${a.fat.toFixed(1)}%</td></tr><tr><th>PAC</th><td>${a.pac.toFixed(1)}</td></tr></table>`};
-window.exportData=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state)],{type:'application/json'}));a.download='backup.json';a.click()};window.resetAll=()=>{if(confirm("Reset?")){localStorage.removeItem(STORAGE_KEY);location.reload()}};
-function switchScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector(`[data-screen="${id}"]`).classList.add('active')}
-document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>switchScreen(btn.dataset.screen)));
-loadState();renderAll();
+  const STORAGE_KEY = 'sanremo_pro_ai_v2';
+  
+  // BASE DE DADOS CORRIGIDA COM VALORES REAIS DE GELADARIA
+  const DEFAULT_PRODUCTS = [
+    { "id": "p_milch", "name": "MILCH (Vollmilch 3.5%)", "category": "Milchprodukt", "allergens": "MILCH", "nutrition": { "fat": 3.5, "sugar": 4.8, "carb": 4.8, "protein": 3.3, "salt": 0.1 }, "water": 87.5, "pac": 100, "pod": 20, "price": 1.20, "composition": [] },
+    { "id": "p_sahne", "name": "SAHNE (Natas 33%)", "category": "Milchprodukt", "allergens": "MILCH", "nutrition": { "fat": 33, "sugar": 3.4, "carb": 3.4, "protein": 2.4, "salt": 0.03 }, "water": 60, "pac": 30, "pod": 10, "price": 3.50, "composition": [] },
+    { "id": "p_magermilch", "name": "MAGERMILCHPULVER", "category": "Pulver", "allergens": "MILCH", "nutrition": { "fat": 0.8, "sugar": 52, "carb": 52, "protein": 35, "salt": 1.1 }, "water": 5, "pac": 150, "pod": 50, "price": 8.00, "composition": [] },
+    { "id": "p_zucker", "name": "Zucker (Saccharose)", "category": "Süße", "allergens": "", "nutrition": { "fat": 0, "sugar": 100, "carb": 100, "protein": 0, "salt": 0 }, "water": 0, "pac": 100, "pod": 100, "price": 1.00, "composition": [] },
+    { "id": "p_dextrose", "name": "Dextrose", "category": "Pulver", "allergens": "", "nutrition": { "fat": 0, "sugar": 100, "carb": 100, "protein": 0, "salt": 0 }, "water": 0, "pac": 190, "pod": 70, "price": 2.50, "composition": [] },
+    { "id": "p_wasser", "name": "Wasser", "category": "Zutat", "allergens": "", "nutrition": { "fat": 0, "sugar": 0, "carb": 0, "protein": 0, "salt": 0 }, "water": 100, "pac": 0, "pod": 0, "price": 0.00, "composition": [] },
+    
+    // Ingredientes Especiais (Exemplos)
+    { "id": "p_morango", "name": "Erdbeeren (Fruta)", "category": "Frucht", "allergens": "", "nutrition": { "fat": 0.4, "sugar": 4.9, "carb": 7.7, "protein": 0.6, "salt": 0 }, "water": 90, "pac": 50, "pod": 20, "price": 3.00, "composition": [] },
+    { "id": "p_bolo", "name": "Bolo de Creme (Kuchen)", "category": "Zutat", "allergens": "MILCH, GLUTEN, EI", "nutrition": { "fat": 15, "sugar": 30, "carb": 45, "protein": 5, "salt": 0.5 }, "water": 35, "pac": 80, "pod": 40, "price": 10.00, "composition": [] },
+    { "id": "p_pistazie", "name": "Pistazien Paste", "category": "PASTE", "allergens": "PISTAZIEN, MILCH", "nutrition": { "fat": 41.7, "sugar": 37, "carb": 38.3, "protein": 12.5, "salt": 0.5 }, "water": 5, "pac": 20, "pod": 30, "price": 18.00, "composition": [] }
+  ];
+
+  let state = { products: [], recipes: [], recipeDraft: [] };
+
+  function loadState() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) { try { state = { ...state, ...JSON.parse(saved) }; } catch(e) {} }
+    if (!state.products || state.products.length === 0) state.products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+    if (!state.recipes) state.recipes = [];
+    if (!state.recipeDraft) state.recipeDraft = [];
+  }
+
+  function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); renderAll(); }
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+  const parseNum = (val) => { if(!val) return 0; let n = parseFloat(String(val).replace(',', '.')); return isNaN(n) ? 0 : n; };
+
+  // =================================================================
+  // O NOVO CÉREBRO DO GERADOR (Lógica de Mestre Gelatiere)
+  // =================================================================
+  function generateAutoRecipe() {
+    const mainProdId = document.getElementById('genMainProduct').value;
+    const mainPercent = parseNum(document.getElementById('genMainPercent').value) / 100;
+    const temp = parseNum(document.getElementById('genTemp').value);
+    const totalKg = parseNum(document.getElementById('genTargetKg').value);
+
+    if (!mainProdId) return alert("Bitte Hauptzutat wählen.");
+    if (mainPercent <= 0 || mainPercent >= 0.8) return alert("Anteil muss zwischen 1% und 80% liegen.");
+
+    const mainProd = state.products.find(p => p.id === mainProdId);
+    if(!mainProd) return;
+
+    const totalGrams = totalKg * 1000;
+    const mainGrams = totalGrams * mainPercent;
+
+    // 1. Metas Científicas (Padrão Gelato Italiano)
+    // PAC Alvo: -18°C precisa de ~230 a 250. -12°C precisa de ~160.
+    const targetPac = Math.abs(temp) * 13.5; 
+    const targetFat = 8; // 8% de gordura
+    const targetSugar = 17; // 17% de açúcar total (equilíbrio doçura/ponto de congelação)
+
+    // O que o ingrediente principal já nos dá:
+    const currentPac = (mainProd.pac || 0) * mainPercent;
+    const currentFat = (mainProd.nutrition?.fat || 0) * mainPercent;
+    const currentSugar = (mainProd.nutrition?.sugar || 0) * mainPercent;
+    
+    // Quanto falta?
+    let neededPac = Math.max(0, targetPac - currentPac);
+    let neededFat = Math.max(0, targetFat - currentFat);
+    let neededSugar = Math.max(0, targetSugar - currentSugar);
+
+    // A. Calcular Natas (Sahne) para a Gordura faltante (Natas tem 33% gordura)
+    let gramsSahne = (neededFat / 100) * totalGrams / 0.33;
+    
+    // B. Limitar Sólidos: Leite em Pó é fixo em 4% para dar estrutura, NUNCA mais que isso.
+    let gramsMagermilch = totalGrams * 0.04;
+
+    // C. Calcular Açúcares (Dextrose + Açúcar)
+    // Usamos uma proporção de 60% Dextrose e 40% Açúcar para atingir o PAC sem ficar doce demais
+    let totalSugarGrams = (neededSugar / 100) * totalGrams;
+    
+    // O PAC dos açúcares: Dextrose (190), Açúcar (100).
+    // Simplificação: 1g de Dextrose baixa mais o ponto de congelação.
+    let gramsDextrose = totalSugarGrams * 0.6; 
+    let gramsZucker = totalSugarGrams * 0.4;
+
+    // D. Calcular o Leite (MILCH) para preencher o resto
+    let currentSum = mainGrams + gramsSahne + gramsMagermilch + gramsDextrose + gramsZucker;
+    let gramsMilch = totalGrams - currentSum;
+    let gramsWasser = 0;
+
+    // Se a fruta for muita e o leite der negativo, usamos água
+    if (gramsMilch < 0) {
+        gramsWasser = Math.abs(gramsMilch);
+        gramsMilch = 0;
+    }
+
+    // Construir a receita
+    let draft = [];
+    draft.push({ id: uid(), productId: mainProd.id, qty: Math.round(mainGrams) });
+    if (gramsSahne > 0) draft.push({ id: uid(), productId: 'p_sahne', qty: Math.round(gramsSahne) });
+    if (gramsMagermilch > 0) draft.push({ id: uid(), productId: 'p_magermilch', qty: Math.round(gramsMagermilch) });
+    if (gramsZucker > 0) draft.push({ id: uid(), productId: 'p_zucker', qty: Math.round(gramsZucker) });
+    if (gramsDextrose > 0) draft.push({ id: uid(), productId: 'p_dextrose', qty: Math.round(gramsDextrose) });
+    if (gramsMilch > 0) draft.push({ id: uid(), productId: 'p_milch', qty: Math.round(gramsMilch) });
+    if (gramsWasser > 0) draft.push({ id: uid(), productId: 'p_wasser', qty: Math.round(gramsWasser) });
+
+    window.currentGeneratedDraft = draft;
+    window.currentGeneratedTotal = totalGrams;
+
+    renderGeneratedRecipe(draft, totalGrams, mainProd, temp);
+  }
+
+  function renderGeneratedRecipe(draft, totalGrams, mainProd, temp) {
+    document.getElementById('genResultArea').style.display = 'block';
+    const analysis = analyzeRecipe(draft);
+    
+    document.getElementById('genAnalysisCards').innerHTML = `
+      <div class="card" style="margin:0; padding:1rem;"><small>Ziel PAC (${temp}°C)</small><br><strong style="font-size:1.2rem; color:var(--primary)">${(Math.abs(temp) * 13.5).toFixed(0)}</strong></div>
+      <div class="card" style="margin:0; padding:1rem;"><small>Ist PAC</small><br><strong style="font-size:1.2rem;">${analysis.pac.toFixed(1)}</strong></div>
+      <div class="card" style="margin:0; padding:1rem;"><small>Fettgehalt</small><br><strong style="font-size:1.2rem;">${analysis.fat.toFixed(1)}%</strong></div>
+      <div class="card" style="margin:0; padding:1rem;"><small>Zuckergehalt</small><br><strong style="font-size:1.2rem;">${analysis.sugar.toFixed(1)}%</strong></div>
+      <div class="card" style="margin:0; padding:1rem;"><small>Feststoffe (Sólidos)</small><br><strong style="font-size:1.2rem;">${analysis.solids ? analysis.solids.toFixed(1)+'%' : '-'}</strong></div>
+      <div class="card" style="margin:0; padding:1rem;"><small>Zutaten Kosten</small><br><strong style="font-size:1.2rem;">${analysis.cost.toFixed(2)} €</strong></div>
+    `;
+
+    const tbody = document.getElementById('genRecipeTable');
+    tbody.innerHTML = `<thead><tr><th>Zutat</th><th>Menge (g)</th><th>Anteil</th></tr></thead><tbody>` + 
+      draft.map(it => {
+        const prod = state.products.find(p => p.id === it.productId);
+        const percent = (it.qty / totalGrams * 100).toFixed(1);
+        return `<tr><td>${prod?.name || '?'}</td><td>${it.qty.toFixed(1)} g</td><td>${percent}%</td></tr>`;
+      }).join('') + `</tbody>`;
+  }
+
+  window.saveGeneratedRecipe = () => {
+    if(!window.currentGeneratedDraft) return;
+    const name = prompt("Name für diese Kreation eingeben:", "Auto-Rezept " + new Date().toLocaleDateString());
+    if(!name) return;
+
+    state.recipes.push({
+      id: uid(), name: name, legalName: "Speiseeis", packaging: "5000",
+      targetKg: window.currentGeneratedTotal / 1000, items: window.currentGeneratedDraft
+    });
+    saveState();
+    alert("✅ Rezept erfolgreich gespeichert!");
+    document.getElementById('genResultArea').style.display = 'none';
+  };
+
+  // =================================================================
+  // LÓGICA DE ANÁLISE E UI
+  // =================================================================
+  function analyzeRecipe(items) {
+    const total = items.reduce((s, i) => s + i.qty, 0);
+    if (total === 0) return null;
+    let acc = { fat: 0, sugar: 0, carb: 0, protein: 0, salt: 0, pac: 0, pod: 0, cost: 0, water: 0 };
+    let completeData = true;
+
+    items.forEach(it => {
+      const p = state.products.find(x => x.id === it.productId);
+      if (!p) return;
+      const factor = it.qty / total;
+      
+      acc.fat += (p.nutrition?.fat || 0) * factor;
+      acc.sugar += (p.nutrition?.sugar || 0) * factor;
+      acc.carb += (p.nutrition?.carb || 0) * factor;
+      acc.protein += (p.nutrition?.protein || 0) * factor;
+      acc.salt += (p.nutrition?.salt || 0) * factor;
+      if(p.water !== undefined && p.water !== null) acc.water += p.water * factor;
+      acc.pac += (p.pac || 0) * factor;
+      acc.pod += (p.pod || 0) * factor;
+      acc.cost += (it.qty / 1000) * (p.price || 0);
+    });
+    const solids = completeData ? (100 - acc.water) : null;
+    return { total, ...acc, solids };
+  }
+
+  function renderAll() {
+    renderProductsList();
+    renderRecipeDraft();
+    renderSavedRecipes();
+
+    const prodOptions = state.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    document.getElementById('genMainProduct').innerHTML = prodOptions;
+    document.getElementById('recipeProductSelect').innerHTML = prodOptions;
+    
+    const recOptions = '<option value="">Rezept wählen</option>' + state.recipes.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+    document.getElementById('labelRecipeSelect').innerHTML = recOptions;
+  }
+
+  function renderProductsList() {
+    document.getElementById('productsList').innerHTML = state.products.map(p => `
+      <div class="product-item" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong>${p.name}</strong><br>
+          <small>PAC: ${p.pac} | Fett: ${p.nutrition?.fat || 0}% | Preis: ${p.price}€/kg</small>
+        </div>
+        <button onclick="editProduct('${p.id}')" style="padding: 0.3rem 0.6rem; font-size:0.7rem;">✏️</button>
+      </div>
+    `).join('');
+  }
+
+  window.editProduct = (id) => {
+    const p = state.products.find(x => x.id === id);
+    document.getElementById('editProductId').value = p.id;
+    document.getElementById('prodName').value = p.name;
+    document.getElementById('prodAllergens').value = p.allergens || '';
+    document.getElementById('prodFat').value = p.nutrition?.fat || 0;
+    document.getElementById('prodSugar').value = p.nutrition?.sugar || 0;
+    document.getElementById('prodWater').value = p.water || 0;
+    document.getElementById('prodPac').value = p.pac || 0;
+    document.getElementById('prodPod').value = p.pod || 0;
+    document.getElementById('prodPrice').value = p.price || 0;
+  };
+
+  window.saveProduct = () => {
+    const id = document.getElementById('editProductId').value;
+    let p = state.products.find(x => x.id === id);
+    if(!p) return;
+    p.name = document.getElementById('prodName').value;
+    p.allergens = document.getElementById('prodAllergens').value;
+    p.nutrition = { ...p.nutrition, fat: parseNum(document.getElementById('prodFat').value), sugar: parseNum(document.getElementById('prodSugar').value) };
+    p.water = parseNum(document.getElementById('prodWater').value);
+    p.pac = parseNum(document.getElementById('prodPac').value);
+    p.pod = parseNum(document.getElementById('prodPod').value);
+    p.price = parseNum(document.getElementById('prodPrice').value);
+    saveState();
+    alert("Produkt aktualisiert");
+  };
+
+  function renderRecipeDraft() {
+    const total = state.recipeDraft.reduce((s,i) => s + i.qty, 0);
+    document.getElementById('recipeTotalWeight').innerText = `Gesamt: ${total.toFixed(1)} g`;
+    document.getElementById('recipeItemsTable').innerHTML = `<tbody>${state.recipeDraft.map(it => {
+      const prod = state.products.find(p => p.id === it.productId);
+      return `<tr><td>${prod?.name}</td><td>${it.qty.toFixed(1)} g</td><td><button class="danger" style="padding:0.1rem 0.4rem" onclick="removeRecipeDraftItem('${it.id}')">X</button></td></tr>`;
+    }).join('')}</tbody>`;
+
+    const analysis = analyzeRecipe(state.recipeDraft);
+    document.getElementById('recipeAnalysis').innerHTML = analysis ? `<div class="three-col" style="margin-top:1rem;">
+        <div class="card" style="padding:0.5rem;">Zucker: <b>${analysis.sugar.toFixed(1)}%</b></div>
+        <div class="card" style="padding:0.5rem;">Fett: <b>${analysis.fat.toFixed(1)}%</b></div>
+        <div class="card" style="padding:0.5rem;">PAC: <b>${analysis.pac.toFixed(1)}</b></div>
+      </div>` : '';
+  }
+
+  window.addRecipeItem = () => {
+    const pid = document.getElementById('recipeProductSelect').value;
+    const qty = parseNum(document.getElementById('recipeItemQty').value);
+    if(pid && qty > 0) { state.recipeDraft.push({ id: uid(), productId: pid, qty }); saveState(); }
+  };
+  window.removeRecipeDraftItem = (id) => { state.recipeDraft = state.recipeDraft.filter(i => i.id !== id); saveState(); };
+  window.clearRecipeDraft = () => { state.recipeDraft = []; saveState(); };
+  window.scaleRecipeToTarget = () => {
+    const targetKg = parseNum(document.getElementById('recipeTargetKg').value);
+    const targetG = targetKg * 1000;
+    const currentTotal = state.recipeDraft.reduce((s,i) => s + i.qty, 0);
+    if(currentTotal === 0) return;
+    state.recipeDraft.forEach(it => it.qty = Math.round((it.qty / currentTotal) * targetG));
+    saveState();
+  };
+  
+  window.saveRecipe = () => {
+    const name = document.getElementById('recipeName').value;
+    if(!name) return alert("Name fehlt");
+    state.recipes.push({
+      id: uid(), name, legalName: document.getElementById('recipeLegal').value || name,
+      packaging: "5000", targetKg: parseNum(document.getElementById('recipeTargetKg').value), items: [...state.recipeDraft]
+    });
+    state.recipeDraft = [];
+    saveState();
+  };
+
+  function renderSavedRecipes() {
+    document.getElementById('savedRecipesList').innerHTML = state.recipes.map(r => `<div class="recipe-item" style="display:flex; justify-content:space-between;">
+      <span><b>${r.name}</b></span>
+      <button onclick="state.recipeDraft = ${JSON.stringify(r.items)}; saveState(); switchScreen('recipes');">Bearbeiten</button>
+    </div>`).join('');
+  }
+
+  window.generateLabel = () => {
+    const r = state.recipes.find(rr => rr.id === document.getElementById('labelRecipeSelect').value);
+    if(!r) return;
+    const a = analyzeRecipe(r.items);
+    document.getElementById('labelPreviewText').innerText = `${r.legalName}\n\nZutaten: ${r.items.map(i => state.products.find(p=>p.id===i.productId)?.name).join(', ')}.\n\nNährwerte pro 100g:\nFett: ${a.fat.toFixed(1)}g\nZucker: ${a.sugar.toFixed(1)}g\n\nInhalt: ${r.packaging}g`;
+  };
+
+  window.exportData = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(state)])); a.download = 'backup.json'; a.click(); };
+  window.resetAll = () => { if(confirm("Reset?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } };
+  
+  function switchScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-screen="${id}"]`).classList.add('active');
+  }
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchScreen(btn.dataset.screen)));
+
+  loadState();
+  renderAll();
 </script>
 </body>
 </html>
